@@ -2118,7 +2118,7 @@ __webpack_require__.r(__webpack_exports__);
       if (this.currentRoom.id) {
         var vm = this;
         vm.getMessages();
-        window.Echo["private"]("chat." + vm.currentRoom.id).listen('.message.new', function (e) {
+        window.Echo["private"]("chat." + vm.currentRoom.id).listen('NewChatMessage', function (e) {
           vm.getMessages();
         });
       }
