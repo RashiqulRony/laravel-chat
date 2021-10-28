@@ -5,9 +5,9 @@
             <div class="card mt-5">
                 <div class="card-header">{{ currentRoom.name }}</div>
 
-                <div class="card-body">
-                    <message-container :messages="messages" />
-                    <input-message :room="currentRoom" v-on:messagesend="connect()" />
+                <div class="card-body" style="background-color: #EEEEEE">
+                    <message-container :messages="messages" :auth="auth" />
+                    <input-message :room="currentRoom" v-on:messagesend="getMessages()" />
                 </div>
             </div>
         </div>
@@ -31,6 +31,7 @@
                 chatRooms: [],
                 currentRoom: [],
                 messages: [],
+                auth: '',
             }
         },
 
@@ -72,6 +73,7 @@
                     .then((response) => {
                         if (response.status === true) {
                             this.chatRooms = response.data;
+                            this.auth = response.auth;
                             this.setRoom(response.data[0])
                         }
 

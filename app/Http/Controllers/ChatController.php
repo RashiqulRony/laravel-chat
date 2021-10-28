@@ -20,6 +20,7 @@ class ChatController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Data get successfully',
+                'auth' => Auth::user(),
                 'data' => $rooms
             ]);
         }catch (\Exception $exception) {
@@ -35,7 +36,7 @@ class ChatController extends Controller
         try {
             $message = ChatMessage::with('user')
                 ->where('chat_room_id', $roomId)
-                ->orderBy('id', 'DESC')
+                ->orderBy('id', 'ASC')
                 ->get();
 
             return response()->json([
