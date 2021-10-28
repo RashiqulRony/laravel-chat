@@ -1,11 +1,13 @@
 <template>
     <div class="row justify-content-center">
         <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">Chat Component</div>
+            <room-item v-if="currentRoom.id" :rooms="chatRooms" :currentRoom="currentRoom" v-on:roomchanged="setRoom($event)"/>
+            <div class="card mt-5">
+                <div class="card-header">{{ currentRoom.name }}</div>
 
                 <div class="card-body">
-                    I'm an example component.
+                    <message-container :messages="messages" />
+                    <input-message :room="currentRoom" v-on:messagesend="connect()" />
                 </div>
             </div>
         </div>
@@ -13,26 +15,84 @@
 </template>
 
 <script>
+    import MessageContainer from "./MessageContainer";
+    import InputMessage from "./InputMessage";
+    import RoomItem from "./RoomItem";
+
     export default {
+        components: {
+            MessageContainer,
+            InputMessage,
+            RoomItem,
+        },
+
         data() {
             return {
-                rooms: []
+                chatRooms: [],
+                currentRoom: [],
+                messages: [],
             }
         },
 
         mounted() {
+
+        },
+
+        created() {
             this.getRooms();
         },
 
+        watch: {
+            currentRoom (val, oldVal) {
+                if (oldVal.id) {
+                    this.disconnect(oldVal)
+                }
+                this.connect()
+            }
+        },
+
         methods: {
+            connect() {
+                if (this.currentRoom.id) {
+                    let vm = this;
+                    vm.getMessages();
+                    window.Echo.private("chat."+ vm.currentRoom.id)
+                    .listen('.message.new', e => {
+                        vm.getMessages();
+                    });
+                }
+            },
+
+            disconnect( room ) {
+                window.Echo.leave("chat."+ room.id);
+            },
+
             getRooms() {
                 axios.get('chat/rooms').then((response) => response.data)
                     .then((response) => {
                         if (response.status === true) {
-                            this.rooms = response.data;
+                            this.chatRooms = response.data;
+                            this.setRoom(response.data[0])
                         }
 
-                    }).catch((error) => {
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            },
+
+            setRoom(room) {
+                this.currentRoom = room;
+            },
+
+            getMessages() {
+                axios.get('chat/'+this.currentRoom.id+'/messages').then((response) => response.data)
+                    .then((response) => {
+                        if (response.status === true) {
+                            this.messages = response.data;
+                        }
+                    })
+                    .catch((error) => {
                         console.log(error);
                     });
             }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewChatMessage;
 use App\Models\ChatMessage;
 use App\Models\ChatRoom;
 use Illuminate\Http\Request;
@@ -52,11 +53,13 @@ class ChatController extends Controller
 
     public function newChatMessage(Request $request, $roomId){
         try {
-            ChatMessage::create([
+            $chatMessage = ChatMessage::create([
                 'chat_room_id' => $roomId,
                 'user_id' => Auth::user()->id,
                 'message' => $request->message,
             ]);
+
+            broadcast(new NewChatMessage($chatMessage))->toOthers();
 
             return response()->json([
                 'status' => true,

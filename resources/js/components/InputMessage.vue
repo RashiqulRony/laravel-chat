@@ -1,23 +1,50 @@
 <template>
-    <div>
-        <div class="row justify-content-center">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">Chat Component</div>
-
-                    <div class="card-body">
-                        I'm an example component.
-                    </div>
-                </div>
-            </div>
+    <div class="row mt-3">
+      <div class="col-10">
+        <div class="form-group mx-md-12 mb-2">
+          <input type="text" v-model="message"
+                 @keyup.enter="sendMessage()"
+                 class="form-control"
+                 placeholder="Say Something...">
         </div>
+      </div>
+
+      <div class="col-2">
+          <button type="submit" @click="sendMessage()" class="btn btn-primary btn-block mb-2">Send</button>
+      </div>
     </div>
 </template>
 
 <script>
-    export default {
-        mounted() {
-            console.log('Component mounted.')
-        }
+export default {
+  props: ['room'],
+
+  data() {
+    return {
+      message: '',
     }
+  },
+
+  mounted() {
+
+  },
+
+  methods: {
+    sendMessage() {
+      if (this.message === '') {
+        return;
+      }
+
+      axios.post('chat/'+this.room.id+'/new-message', {message: this.message})
+          .then((response) => response.data)
+          .then((response) => {
+            this.message = '';
+            this.$emit('messagesend')
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+    }
+  }
+}
 </script>

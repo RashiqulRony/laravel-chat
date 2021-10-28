@@ -21,8 +21,9 @@ window.axios = axios;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-Vue.component('rooms', require('./components/Rooms.vue').default);
-Vue.component('chat-view', require('./components/Chat.vue').default);
+Vue.component('chat', require('./components/Chat.vue').default);
+Vue.component('message-item', require('./components/MessageItem').default);
+Vue.component('room-item', require('./components/RoomItem').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

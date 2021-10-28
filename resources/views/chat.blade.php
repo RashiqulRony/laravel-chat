@@ -2,6 +2,6 @@
 
 @section('content')
 <div class="container">
-    <rooms></rooms>
+    <chat></chat>
 </div>
 @endsection
