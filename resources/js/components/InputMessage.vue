@@ -40,10 +40,6 @@
                     .then((response) => {
                         this.message = '';
                         this.$emit('messagesend');
-                        setTimeout(function () {
-                            var element = document.getElementById('messageBox');
-                            element.scrollTop = element.scrollHeight;
-                        }, 1000)
                     })
                     .catch((error) => {
                         console.log(error);

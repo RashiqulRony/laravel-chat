@@ -2154,6 +2154,10 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (response) {
         if (response.status === true) {
           _this2.messages = response.data;
+          setTimeout(function () {
+            var element = document.getElementById('messageBox');
+            element.scrollTop = element.scrollHeight;
+          }, 1000);
         }
       })["catch"](function (error) {
         console.log(error);
@@ -2251,11 +2255,6 @@ __webpack_require__.r(__webpack_exports__);
         _this.message = '';
 
         _this.$emit('messagesend');
-
-        setTimeout(function () {
-          var element = document.getElementById('messageBox');
-          element.scrollTop = element.scrollHeight;
-        }, 1000);
       })["catch"](function (error) {
         console.log(error);
       });

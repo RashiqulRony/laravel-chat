@@ -92,6 +92,10 @@
                     .then((response) => {
                         if (response.status === true) {
                             this.messages = response.data;
+                            setTimeout(function () {
+                                var element = document.getElementById('messageBox');
+                                element.scrollTop = element.scrollHeight;
+                            }, 1000)
                         }
                     })
                     .catch((error) => {
