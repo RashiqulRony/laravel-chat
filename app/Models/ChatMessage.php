@@ -11,10 +11,14 @@ class ChatMessage extends Model
 
     protected $table = 'chat_messages';
 
-    protected $fillable = ['chat_room_id', 'user_id', 'message'];
+    protected $fillable = ['chat_room_id', 'user_id', 'message', 'type'];
 
     public function room() {
         return $this->belongsTo(ChatRoom::class, 'chat_room_id', 'id');
+    }
+
+    public function files() {
+        return $this->hasMany(ChatFile::class, 'chat_id', 'id');
     }
 
     public function user() {

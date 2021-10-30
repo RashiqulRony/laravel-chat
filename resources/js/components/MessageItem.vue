@@ -2,14 +2,33 @@
     <div>
         <div v-if="auth.id === message.user.id" class="d-flex align-items-center text-right justify-content-end ">
             <div class="pr-2"> <span class="name">Me</span>
-                <p class="msg">{{ message.message }}</p>
+                <template v-if="message.type === 'text'">
+                    <p v-if="message.type === 'text'" class="msg">{{ message.message }}</p>
+                </template>
+                <template v-else>
+                    <div class="row justify-content-end">
+                        <div v-if="message.files.length > 0" v-for="(file, fKey) in message.files" class="col-2">
+                            <img class="img-thumbnail img-fluid" :src="file.url" >
+                        </div>
+                    </div>
+                </template>
             </div>
             <div><img :src="'/user.png'" width="30" class="img1" /></div>
         </div>
         <div v-else class="d-flex align-items-center">
             <div class="text-left pr-1"><img :src="'/user.png'" width="30" class="img1" /></div>
-            <div class="pr-2 pl-1"> <span class="name">{{ message.user.name }}</span>
-                <p class="msg">{{ message.message }}</p>
+            <div class="pr-2 pl-1">
+                <span class="name">{{ message.user.name }}</span>
+                <template v-if="message.type === 'text'">
+                    <p class="msg">{{ message.message }}</p>
+                </template>
+                <template v-else>
+                    <div class="row">
+                        <div v-if="message.files.length > 0" v-for="(file, fKey) in message.files" class="col-2">
+                            <img class="img-thumbnail img-fluid" :src="file.url" >
+                        </div>
+                    </div>
+                </template>
             </div>
         </div>
     </div>
@@ -30,7 +49,16 @@
         },
 
         methods: {
+            getFileSize(fileSizeInBytes) {
+                var i = -1;
+                var byteUnits = [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'];
+                do {
+                    fileSizeInBytes = fileSizeInBytes / 1024;
+                    i++;
+                } while (fileSizeInBytes > 1024);
 
+                return Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
+            }
         }
     }
 </script>

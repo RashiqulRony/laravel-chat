@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewChatMessage;
+use App\Models\ChatFile;
 use App\Models\ChatMessage;
 use App\Models\ChatRoom;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class ChatController extends Controller
 
     public function messages(Request $request, $roomId){
         try {
-            $message = ChatMessage::with('user')
+            $message = ChatMessage::with('user', 'files')
                 ->where('chat_room_id', $roomId)
                 ->orderBy('id', 'ASC')
                 ->get();
@@ -58,7 +59,22 @@ class ChatController extends Controller
                 'chat_room_id' => $roomId,
                 'user_id' => Auth::user()->id,
                 'message' => $request->message,
+                'type' => $request->type,
             ]);
+            $files = $request->file('images');
+            if (isset($chatMessage) && !empty($files)) {
+                $fileData = [];
+                foreach ($files as $file) {
+                    $image = (new MediaController())->imageUpload($file, '/files');
+                    $fileData[] = [
+                        'chat_id' => $chatMessage->id,
+                        'name' => $image['originalName'],
+                        'size' => $image['size'],
+                        'url' => $image['url'],
+                    ];
+                }
+                ChatFile::insert($fileData);
+            }
 
             broadcast(new NewChatMessage($chatMessage))->toOthers();
 
