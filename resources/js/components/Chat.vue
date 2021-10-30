@@ -5,7 +5,7 @@
             <div class="card mt-5">
                 <div class="card-header">{{ currentRoom.name }}</div>
 
-                <div class="card-body" style="background-color: #EEEEEE">
+                <div class="card-body" style="background-color: #EEEEEE;     min-height: calc(100vh - 300px);">
                     <message-container :messages="messages" :auth="auth" />
                     <input-message :room="currentRoom" v-on:messagesend="getMessages()" />
                 </div>

@@ -22,7 +22,8 @@
 
         mounted() {
 
-        }
+        },
+
     }
 </script>
 
@@ -47,6 +48,6 @@
 .scroll {
     overflow-y: auto;
     scroll-behavior: smooth;
-    height: 325px
+    height: calc(100vh - 400px);
 }
 </style>

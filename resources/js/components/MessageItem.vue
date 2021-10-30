@@ -6,9 +6,9 @@
                     <p v-if="message.type === 'text'" class="msg">{{ message.message }}</p>
                 </template>
                 <template v-else>
-                    <div class="row justify-content-end">
-                        <div v-if="message.files.length > 0" v-for="(file, fKey) in message.files" class="col-2">
-                            <img class="img-thumbnail img-fluid" :src="file.url" >
+                    <div class="images-me">
+                        <div v-if="message.files.length > 0" v-for="(file, fKey) in message.files" class="imagewrapper">
+                            <img class="img-thumbnail image img-fluid" :src="file.url" >
                         </div>
                     </div>
                 </template>
@@ -23,9 +23,9 @@
                     <p class="msg">{{ message.message }}</p>
                 </template>
                 <template v-else>
-                    <div class="row">
-                        <div v-if="message.files.length > 0" v-for="(file, fKey) in message.files" class="col-2">
-                            <img class="img-thumbnail img-fluid" :src="file.url" >
+                    <div class="images-u">
+                        <div v-if="message.files.length > 0" v-for="(file, fKey) in message.files" class="imagewrapper">
+                            <img class="img-thumbnail image img-fluid" :src="file.url" >
                         </div>
                     </div>
                 </template>
@@ -35,6 +35,7 @@
 </template>
 
 <script>
+
     export default {
         props: ['message', 'auth'],
 
@@ -77,5 +78,32 @@
     .img1{
         width: 45px;
         margin: 0 -7px 25px -7px;
+    }
+
+    .images-me {
+        display: flex;
+        flex-wrap: wrap;
+        margin: -5px;
+        justify-content: right;
+    }
+    .images-u {
+        display: flex;
+        flex-wrap: wrap;
+        margin: -5px;
+    }
+
+    .imagewrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 169px;
+        margin: 3px;
+    }
+
+    .image {
+        display: block;
+        object-fit: cover;
+        width: 100%;
+        height: 100%; /* set to 'auto' in IE11 to avoid distortions */
     }
 </style>

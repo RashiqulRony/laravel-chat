@@ -9,6 +9,10 @@ require('./bootstrap');
 window.Vue = require('vue').default;
 import axios   from 'axios';
 window.axios = axios;
+
+import imageViewer from "vue-image-viewer";
+Vue.use(imageViewer);
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
