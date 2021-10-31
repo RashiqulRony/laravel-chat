@@ -95,7 +95,7 @@ class ChatController extends Controller
             $file = ChatFile::find($fileId);
             if (isset($file)) {
                 $chatMessage = ChatMessage::find($file->chat_id);
-                $image = new MediaController();//()->imageUpload($file, '/files');
+                $image = new MediaController();
                 $image->delete('files', $file->name,);
                 $file->delete();
 
@@ -114,6 +114,37 @@ class ChatController extends Controller
             }
 
         }catch (\Exception $exception) {
+            return response()->json([
+                'status' => false,
+                'message' => $exception->getMessage()
+            ]);
+        }
+    }
+
+    public function chatDelete($chatId) {
+        try {
+            $chatMessage = ChatMessage::with('files')->find($chatId);
+            if (isset($chatMessage)) {
+                if (!empty($chatMessage->files)) {
+                    foreach ($chatMessage->files as $file):
+                        $image = new MediaController();
+                        $image->delete('files', $file->name,);
+                        $file->delete();
+                    endforeach;
+                }
+                broadcast(new NewChatMessage($chatMessage))->toOthers();
+                $chatMessage->delete();
+                return response()->json([
+                    'status' => true,
+                    'message' => 'File delete successfully'
+                ]);
+            } else {
+                return response()->json([
+                    'status' => false,
+                    'message' => "Something went wrong, File can't delete."
+                ]);
+            }
+        } catch (\Exception $exception) {
             return response()->json([
                 'status' => false,
                 'message' => $exception->getMessage()

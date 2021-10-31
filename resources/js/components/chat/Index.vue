@@ -6,7 +6,7 @@
                 <div class="card-header">{{ currentRoom.name }}</div>
 
                 <div class="card-body" style="background-color: #EEEEEE;     min-height: calc(100vh - 300px);">
-                    <message-container v-on:deletefile="getMessages()" :messages="messages" :auth="auth" />
+                    <message-container v-on:deletechat="getMessages()" :messages="messages" :auth="auth" />
                     <input-message :room="currentRoom" v-on:messagesend="getMessages()" />
                 </div>
             </div>

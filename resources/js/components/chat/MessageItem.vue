@@ -1,9 +1,14 @@
 <template>
     <div>
         <div v-if="auth.id === message.user.id" class="d-flex align-items-center text-right justify-content-end ">
-            <div class="pr-2"> <span class="name">Me</span>
+            <div class="pr-2">
+                <span class="name">Me</span>
                 <template v-if="message.type === 'text'">
-                    <p v-if="message.type === 'text'" class="msg">{{ message.message }}</p>
+                    <p class="msg">{{ message.message }}</p>
+<!--                    <p class="msg">
+                        <input type="text" class="form-control">
+                    </p>-->
+
                 </template>
                 <template v-else>
                     <div>
@@ -26,7 +31,13 @@
                     </div>
                 </template>
             </div>
-            <div><img :src="'/user.png'" width="30" class="img1" /></div>
+            <div class="dropdown">
+                <img style="cursor: pointer" class="dropdown-toggle img1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" :src="'/user.png'" width="30" />
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a v-if="message.type === 'text'" class="dropdown-item" href="#">Edit</a>
+                    <a class="dropdown-item" @click="chatDelete(message.id)">Delete</a>
+                </div>
+            </div>
         </div>
         <div v-else class="d-flex align-items-center">
             <div class="text-left pr-1"><img :src="'/user.png'" width="30" class="img1" /></div>
@@ -69,13 +80,26 @@
         },
 
         methods: {
+            chatDelete(chatId) {
+                var url = '/chat/'+chatId;
+                axios.delete(url)
+                    .then((response) => response.data)
+                    .then((response) => {
+                        if (response.status === true) {
+                            this.$emit('deletechat');
+                        }
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+            },
             deleteFile(chatId, fileId) {
                 var url = '/chat/'+chatId+'/file/'+fileId;
                 axios.delete(url)
                     .then((response) => response.data)
                     .then((response) => {
                         if (response.status === true) {
-                            this.$emit('deletefile');
+                            this.$emit('deletechat');
                         }
                     })
                     .catch((error) => {
@@ -151,6 +175,11 @@
         cursor: pointer;
     }
 
+    .actionBtn {
+        position: absolute;
+        left: 0;
+        bottom: 16px;
+    }
     @keyframes winanim {
         0%{opacity:0;transform:scale3d(.3,.3,.3)}
         50%{opacity:1}

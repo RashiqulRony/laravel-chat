@@ -3,7 +3,7 @@
         <div class="main">
             <div id="messageBox" class="px-2 scroll">
                 <template v-for="(message, index) in messages">
-                    <message-item v-on:deletefile="deleteFile()" :auth="auth" :message="message"/>
+                    <message-item v-on:deletechat="deleteChat()" :auth="auth" :message="message"/>
                 </template>
             </div>
         </div>
@@ -24,8 +24,8 @@
 
         },
         methods:{
-            deleteFile() {
-                this.$emit('deletefile');
+            deleteChat() {
+                this.$emit('deletechat');
             }
         }
 
