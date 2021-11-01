@@ -22,6 +22,7 @@ window.axios = axios;
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('user-list', require('./components/chat/UserList.vue').default);
 Vue.component('chat', require('./components/chat/Index.vue').default);
 Vue.component('message-item', require('./components/chat/MessageItem').default);
 Vue.component('room-item', require('./components/chat/RoomItem').default);

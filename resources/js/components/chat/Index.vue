@@ -1,107 +1,67 @@
 <template>
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <room-item v-if="currentRoom.id" :rooms="chatRooms" :currentRoom="currentRoom" v-on:roomchanged="setRoom($event)"/>
-            <div class="card mt-5">
-                <div class="card-header">{{ currentRoom.name }}</div>
-
-                <div class="card-body" style="background-color: #EEEEEE;     min-height: calc(100vh - 300px);">
-                    <message-container v-on:deletechat="getMessages()" :messages="messages" :auth="auth" />
-                    <input-message :room="currentRoom" v-on:messagesend="getMessages()" />
+    <div class="row h-100">
+        <div class="col-12 col-sm-5 col-md-4 d-flex flex-column" id="chat-list-area" style="position:relative; height: 100vh">
+            <!-- Navbar -->
+            <div class="row d-flex flex-row align-items-center p-2 navbar">
+                <img :src="'/user.png'" alt="Profile Photo" class="img-fluid rounded-circle mr-2"
+                     style="height:50px; cursor:pointer;" id="display-pic">
+                <div class="text-white font-weight-bold" id="username"> User Name</div>
+                <div class="nav-item dropdown ml-auto">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-v text-white"></i></a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="#">New Group</a>
+                        <a class="dropdown-item" href="#">Archived</a>
+                        <a class="dropdown-item" href="#">Starred</a>
+                        <a class="dropdown-item" href="#">Settings</a>
+                        <a class="dropdown-item" href="#" onclick="event.preventDefault();document.getElementById('logout-form').submit();">Log Out</a>
+                    </div>
                 </div>
             </div>
+            <!-- Chat List -->
+            <ChatList/>
+        </div>
+
+        <!-- Message Area -->
+        <div id="message-area" class="d-none d-sm-flex flex-column col-12 col-sm-7 col-md-8 p-0 h-100">
+            <!-- Current User or Group -->
+            <CurrentUser />
+
+            <MessageContainer/>
+
+            <InputMessage/>
         </div>
     </div>
 </template>
 
 <script>
-    import MessageContainer from "./MessageContainer";
-    import InputMessage from "./InputMessage";
-    import RoomItem from "./RoomItem";
+import ChatList from './UserList'
+import CurrentUser from './CurrentUser'
+import MessageContainer from './MessageContainer'
+import InputMessage from './InputMessage'
 
-    export default {
-        components: {
-            MessageContainer,
-            InputMessage,
-            RoomItem,
-        },
+export default {
+    components: {
+        ChatList,
+        CurrentUser,
+        MessageContainer,
+        InputMessage,
+    },
 
-        data() {
-            return {
-                chatRooms: [],
-                currentRoom: [],
-                messages: [],
-                auth: '',
-            }
-        },
+    data() {
+        return {}
+    },
 
-        mounted() {
+    mounted() {
 
-        },
+    },
 
-        created() {
-            this.getRooms();
-        },
+    created() {
 
-        watch: {
-            currentRoom (val, oldVal) {
-                if (oldVal.id) {
-                    this.disconnect(oldVal)
-                }
-                this.connect()
-            }
-        },
+    },
 
-        methods: {
-            connect() {
-                if (this.currentRoom.id) {
-                    let vm = this;
-                    vm.getMessages();
-                    window.Echo.private("chat."+ vm.currentRoom.id)
-                    .listen('NewChatMessage', e => {
-                        vm.getMessages();
-                    });
-                }
-            },
+    watch: {},
 
-            disconnect( room ) {
-                window.Echo.leave("chat."+ room.id);
-            },
-
-            getRooms() {
-                axios.get('chat/rooms').then((response) => response.data)
-                    .then((response) => {
-                        if (response.status === true) {
-                            this.chatRooms = response.data;
-                            this.auth = response.auth;
-                            this.setRoom(response.data[0])
-                        }
-
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            },
-
-            setRoom(room) {
-                this.currentRoom = room;
-            },
-
-            getMessages() {
-                axios.get('chat/'+this.currentRoom.id+'/messages').then((response) => response.data)
-                    .then((response) => {
-                        if (response.status === true) {
-                            this.messages = response.data;
-                            setTimeout(function () {
-                                var element = document.getElementById('messageBox');
-                                element.scrollTop = element.scrollHeight;
-                            }, 1000)
-                        }
-                    })
-                    .catch((error) => {
-                        console.log(error);
-                    });
-            }
-        }
-    }
+    methods: {}
+}
 </script>
