@@ -65,7 +65,7 @@ class ChatController extends Controller
             if (isset($chatMessage) && !empty($files)) {
                 $fileData = [];
                 foreach ($files as $file) {
-                    $image = (new MediaController())->imageUpload($file, '/files');
+                    $image = (new MediaController())->imageUpload($file, 'files');
                     $fileData[] = [
                         'chat_id' => $chatMessage->id,
                         'name' => $image['name'],

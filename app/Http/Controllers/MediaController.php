@@ -26,7 +26,7 @@ class MediaController
             $fileName = Str::slug($this->name, '-').'.'.$file->getClientOriginalExtension();
         } else {
             $newName = str_replace('.'.$file->getClientOriginalExtension(), '', $file->getClientOriginalName());
-            $fileName = time().'-'.Str::slug($newName, '-').'.'.$file->getClientOriginalExtension();
+            $fileName = uniqid().'-'.Str::slug($newName, '-').'.'.$file->getClientOriginalExtension();
         }
         $data['name'] = $fileName;
         $data['originalName'] = $file->getClientOriginalName();
