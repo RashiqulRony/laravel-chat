@@ -6,6 +6,9 @@ use App\Events\NewChatMessage;
 use App\Models\ChatFile;
 use App\Models\ChatMessage;
 use App\Models\ChatRoom;
+use App\Models\User;
+use App\Models\UserChatSession;
+use App\Models\UserMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,14 +18,17 @@ class ChatController extends Controller
         return view('chat');
     }
 
-    public function rooms(Request $request){
+    public function all(Request $request){
         try {
+            $auth = Auth::user();
             $rooms = ChatRoom::all();
+            $users = User::where('id', '!=', $auth->id)->get();
             return response()->json([
                 'status' => true,
                 'message' => 'Data get successfully',
-                'auth' => Auth::user(),
-                'data' => $rooms
+                'auth' => $auth,
+                'rooms' => $rooms,
+                'users' => $users
             ]);
         }catch (\Exception $exception) {
             return response()->json([
@@ -33,12 +39,13 @@ class ChatController extends Controller
     }
 
 
-    public function messages(Request $request, $roomId){
+    public function messages(Request $request){
         try {
-            $message = ChatMessage::with('user', 'files')
-                ->where('chat_room_id', $roomId)
-                ->orderBy('id', 'ASC')
-                ->get();
+
+            $conId = $request->sender_id + $request->receiver_id;
+            $message = UserChatSession::with('messages')
+                ->where('conversation_id', $conId)
+                ->first();
 
             return response()->json([
                 'status' => true,
@@ -53,30 +60,26 @@ class ChatController extends Controller
         }
     }
 
-    public function newChatMessage(Request $request, $roomId){
+    public function newChatMessage(Request $request){
         try {
-            $chatMessage = ChatMessage::create([
-                'chat_room_id' => $roomId,
-                'user_id' => Auth::user()->id,
-                'message' => $request->message,
-                'type' => $request->type,
-            ]);
-            $files = $request->file('images');
-            if (isset($chatMessage) && !empty($files)) {
-                $fileData = [];
-                foreach ($files as $file) {
-                    $image = (new MediaController())->imageUpload($file, 'files');
-                    $fileData[] = [
-                        'chat_id' => $chatMessage->id,
-                        'name' => $image['name'],
-                        'size' => $image['size'],
-                        'url' => $image['url'],
-                    ];
-                }
-                ChatFile::insert($fileData);
-            }
 
-            broadcast(new NewChatMessage($chatMessage))->toOthers();
+            $conId = $request->sender_id + $request->receiver_id;
+
+            $chatSession = UserChatSession::updateOrCreate(
+                ['conversation_id'   => $conId],
+                ['conversation_secret' => bcrypt($conId)]
+            );
+
+            if (isset($chatSession)) {
+                $chatMessage = UserMessage::create([
+                    'chat_session_id' => $chatSession->id,
+                    'user_id'         => $request->sender_id,
+                    'message'         => $request->message,
+                    'type'            => $request->type,
+                ]);
+
+                broadcast(new NewChatMessage($chatMessage))->toOthers();
+            }
 
             return response()->json([
                 'status' => true,

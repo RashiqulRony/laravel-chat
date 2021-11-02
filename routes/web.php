@@ -22,9 +22,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 Route::group(['prefix' => 'chat', 'as' => 'chat.', 'middleware' => ['auth']], function () {
     Route::get('/', 'ChatController@index')->name('index');
-    Route::get('rooms', 'ChatController@rooms')->name('rooms');
-    Route::get('/{room_id}/messages', 'ChatController@messages')->name('messages');
-    Route::post('/{room_id}/new-message', 'ChatController@newChatMessage')->name('newMessage');
+    Route::get('all', 'ChatController@all')->name('all');
+    Route::post('/messages', 'ChatController@messages')->name('messages');
+    Route::post('/new-message', 'ChatController@newChatMessage')->name('newMessage');
     Route::delete('/{chat_id}', 'ChatController@chatDelete')->name('chatDelete');
     Route::delete('/{chat_id}/file/{file_id}', 'ChatController@deleteSingleFile')->name('deleteSingleFile');
 });

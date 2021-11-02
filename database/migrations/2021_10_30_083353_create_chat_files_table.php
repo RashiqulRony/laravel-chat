@@ -15,9 +15,11 @@ class CreateChatFilesTable extends Migration
     {
         Schema::create('chat_files', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('chat_id');
+            $table->unsignedBigInteger('room_chat_id')->nullable();
+            $table->unsignedBigInteger('user_message_id')->nullable();
             $table->string('name');
             $table->string('size');
+            $table->string('ext');
             $table->text('url');
             $table->timestamps();
         });

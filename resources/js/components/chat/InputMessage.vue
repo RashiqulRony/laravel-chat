@@ -6,8 +6,11 @@
             <input ref="files" name="images[]" id="image" accept="image/*" multiple="multiple" class="file-input" type="file" size="60" >
         </label>
 
-        <input type="text" name="message" id="input" placeholder="Type a message" class="flex-grow-1 border-0 px-3 py-2 my-3 rounded shadow-sm">
-        <button class="btn btn-sm btn-info" style="padding: 9px 0;">
+        <input type="text" v-model="message"
+               @keyup.enter="sendMessage()"
+               placeholder="Type a message"
+               class="flex-grow-1 border-0 px-3 py-2 my-3 rounded shadow-sm">
+        <button @click="sendMessage()" class="btn btn-sm btn-info" style="padding: 9px 0;">
             <i class="fas fa-paper-plane text-muted px-3" style="cursor:pointer;"></i>
         </button>
     </div>
@@ -15,7 +18,7 @@
 
 <script>
     export default {
-        props: ['room'],
+        props: ['currentUser', 'auth'],
 
         data() {
             return {
@@ -33,7 +36,13 @@
                 if (this.message === '') {
                     return;
                 }
-                axios.post('chat/'+this.room.id+'/new-message', {message: this.message, type: 'text'})
+                var data = {
+                    message: this.message,
+                    type: 'text',
+                    sender_id: this.auth.id,
+                    receiver_id: this.currentUser.id,
+                }
+                axios.post('chat/new-message', data)
                     .then((response) => response.data)
                     .then((response) => {
                         if (response.status === true) {

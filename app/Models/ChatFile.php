@@ -11,5 +11,5 @@ class ChatFile extends Model
 
     protected $table = 'chat_files';
 
-    protected $fillable = ['chat_id', 'name', 'size', 'url'];
+    protected $fillable = ['room_chat_id', 'user_message_id', 'name', 'size', 'ext', 'url'];
 }

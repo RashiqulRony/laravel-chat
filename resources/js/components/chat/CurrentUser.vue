@@ -1,11 +1,11 @@
 <template>
     <div class="row d-flex flex-row align-items-center p-2 m-0 w-100 navbar">
         <a href="#">
-            <img src="chat-asset/images/0923102932_aPRkoW.jpg" alt="Profile Photo" id="pic" class="img-fluid rounded-circle mr-2" style="height: 50px;">
+            <img :src="'/user.png'" alt="Profile Photo" id="pic" class="img-fluid rounded-circle mr-2" style="height: 50px;">
         </a>
         <div class="d-flex flex-column">
-            <div id="name" class="text-white font-weight-bold">Programmers</div>
-            <div id="details" class="text-white small">You, Nitin, Suvro Mobile</div>
+            <div id="name" class="text-white font-weight-bold">{{ currentUser.name }}</div>
+            <div id="details" class="text-white small">{{ currentUser.email }}</div>
         </div>
 
         <div class="d-flex flex-row align-items-center ml-auto">
@@ -17,6 +17,8 @@
 
 <script>
     export default {
+        props: ['currentUser'],
+
         components: {
 
         },

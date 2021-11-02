@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\ChatMessage;
+use App\Models\UserMessage;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -21,7 +21,7 @@ class NewChatMessage implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct(ChatMessage $chatMessage)
+    public function __construct(UserMessage $chatMessage)
     {
         $this->chatMessage = $chatMessage;
     }
@@ -33,7 +33,7 @@ class NewChatMessage implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('chat.'. $this->chatMessage->chat_room_id );
+        return new PrivateChannel('chat.user');
     }
 
 }
