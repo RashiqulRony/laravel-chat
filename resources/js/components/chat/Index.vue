@@ -27,7 +27,7 @@
             <!-- Current User or Group -->
             <CurrentUser v-if="currentUser.id" :currentUser="currentUser"/>
 
-            <MessageContainer v-if="currentUser.id" :messages="messages" :auth="auth" />
+            <MessageContainer v-if="currentUser.id" v-on:deletechat="getMessages()" :messages="messages" :auth="auth" />
 
             <InputMessage v-if="currentUser.id" :auth="auth" :currentUser="currentUser" v-on:messagesend="getMessages()"/>
         </div>
@@ -116,11 +116,7 @@ export default {
             axios.post('chat/messages', {sender_id: this.auth.id, receiver_id: this.currentUser.id}).then((response) => response.data)
                 .then((response) => {
                     if (response.status === true) {
-                        if (response.data) {
-                            this.messages = response.data.messages;
-                        } else {
-                            this.messages = []
-                        }
+                        this.messages = response.data;
                         setTimeout(function () {
                             var element = document.getElementById('messages');
                             element.scrollTop = element.scrollHeight;

@@ -1,6 +1,6 @@
 <template>
     <div id="chat-list" class="row" style="overflow: auto;">
-        <div v-for="(user, index) in users" class="chat-list-item d-flex flex-row w-100 p-2 border-bottom" @click="selectUser(user)">
+        <div v-for="(user, index) in users" class="chat-list-item d-flex flex-row w-100 p-2 border-bottom" :class="user.id === (selected ? selected.id: 0) ? 'active' : '' " @click="selectUser(user)">
             <img :src="'/user.png'" alt="Profile Photo" class="img-fluid rounded-circle mr-2" style="height:50px;">
             <div class="w-50">
                 <div class="name">{{ user.name }}</div>

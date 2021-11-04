@@ -1,11 +1,11 @@
 <template>
     <div class="justify-self-end align-items-center flex-row d-flex" id="input-area">
-
+      <form id="chatFileForm" enctype="multipart/form-data" method="post">
         <label class="file-label">
             <i class="fas fa-paperclip text-muted px-3" style="font-size:1.5rem;"></i>
-            <input ref="files" name="images[]" id="image" accept="image/*" multiple="multiple" class="file-input" type="file" size="60" >
+            <input ref="files"  @change="inputFiles($event)" name="images[]" id="image" accept="image/*" multiple="multiple" class="file-input" type="file" size="60" >
         </label>
-
+      </form>
         <input type="text" v-model="message"
                @keyup.enter="sendMessage()"
                placeholder="Type a message"
@@ -62,16 +62,18 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-                let form = document.getElementById('chatForm');
+                let form = document.getElementById('chatFileForm');
                 let formData = new FormData(form);
                 formData.append('type', 'file');
+                formData.append('sender_id', _this.auth.id);
+                formData.append('receiver_id', _this.currentUser.id);
                 $.ajax({
                     type: 'post',
                     data: formData,
                     processData: false,
                     contentType: false,
                     cache: false,
-                    url: 'chat/'+this.room.id+'/new-message',
+                    url: 'chat/new-message',
                     success: function (response) {
                         if (response.status === true){
                             _this.message = '';

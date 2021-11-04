@@ -23,6 +23,7 @@ class ChatController extends Controller
             $auth = Auth::user();
             $rooms = ChatRoom::all();
             $users = User::where('id', '!=', $auth->id)->get();
+
             return response()->json([
                 'status' => true,
                 'message' => 'Data get successfully',
@@ -41,16 +42,17 @@ class ChatController extends Controller
 
     public function messages(Request $request){
         try {
-
             $conId = $request->sender_id + $request->receiver_id;
-            $message = UserChatSession::with('messages')
-                ->where('conversation_id', $conId)
-                ->first();
-
+            $conInfo = UserChatSession::select('id')->where('conversation_id', $conId)->first();
+            if (isset($conInfo)) {
+                $messages = UserMessage::with('files')->where('chat_session_id', $conInfo->id)->get();
+            } else {
+                $messages = [];
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'Data get successfully',
-                'data' => $message
+                'data' => $messages
             ]);
         }catch (\Exception $exception) {
             return response()->json([
@@ -77,6 +79,21 @@ class ChatController extends Controller
                     'message'         => $request->message,
                     'type'            => $request->type,
                 ]);
+                $files = $request->file('images');
+                if (isset($chatMessage) && !empty($files)) {
+                    $fileData = [];
+                    foreach ($files as $file) {
+                        $image = (new MediaController())->imageUpload($file, 'files');
+                        $fileData[] = [
+                            'user_message_id' => $chatMessage->id,
+                            'name' => $image['name'],
+                            'size' => $image['size'],
+                            'url' => $image['url'],
+                            'ext' => $image['ext'],
+                        ];
+                    }
+                    ChatFile::insert($fileData);
+                }
 
                 broadcast(new NewChatMessage($chatMessage))->toOthers();
             }
@@ -97,7 +114,7 @@ class ChatController extends Controller
         try {
             $file = ChatFile::find($fileId);
             if (isset($file)) {
-                $chatMessage = ChatMessage::find($file->chat_id);
+                $chatMessage = UserMessage::find($file->user_message_id);
                 $image = new MediaController();
                 $image->delete('files', $file->name,);
                 $file->delete();
@@ -126,7 +143,7 @@ class ChatController extends Controller
 
     public function chatDelete($chatId) {
         try {
-            $chatMessage = ChatMessage::with('files')->find($chatId);
+            $chatMessage = UserMessage::with('files')->find($chatId);
             if (isset($chatMessage)) {
                 if (!empty($chatMessage->files)) {
                     foreach ($chatMessage->files as $file):
