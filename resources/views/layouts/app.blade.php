@@ -84,5 +84,12 @@
     <script src="{{ asset('js/app.js') }}"></script>
 
     @stack('scripts')
+
+    @if(Request::is('chat/meet*') == false)
+    <script>
+        var myobj = document.getElementById("zmmtg-root");
+        myobj.remove();
+    </script>
+    @endif
 </body>
 </html>

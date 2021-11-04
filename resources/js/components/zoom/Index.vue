@@ -1,5 +1,6 @@
 <template>
-    <div class="iframe-container">
+    <div></div>
+<!--    <div class="iframe-container">
         <meta charset="utf-8">
         <link type="text/css" rel="stylesheet" href="https://dmogdx0jrul3u.cloudfront.net/1.3.7/css/bootstrap.css">
         <link
@@ -9,7 +10,7 @@
         >
 
         <meta name="format-detection" content="telephone=no">
-    </div>
+    </div>-->
 </template>
 
 <script>
