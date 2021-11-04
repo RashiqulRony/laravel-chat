@@ -27,4 +27,6 @@ Route::group(['prefix' => 'chat', 'as' => 'chat.', 'middleware' => ['auth']], fu
     Route::post('/new-message', 'ChatController@newChatMessage')->name('newMessage');
     Route::delete('/{chat_id}', 'ChatController@chatDelete')->name('chatDelete');
     Route::delete('/{chat_id}/file/{file_id}', 'ChatController@deleteSingleFile')->name('deleteSingleFile');
+
+    Route::get('/meet', 'MeetController@index')->name('meet');
 });

@@ -25,8 +25,11 @@
         "vue-template-compiler": "^2.6.12"
     },
     "dependencies": {
+        "@zoom/videosdk": "^1.1.5",
+        "@zoomus/websdk": "^2.0.1",
         "laravel-echo": "^1.11.3",
         "pusher-js": "^7.0.3",
-        "vue-moment": "^4.1.0"
+        "vue-moment": "^4.1.0",
+        "zoomus-jssdk": "^1.7.1"
     }
 }

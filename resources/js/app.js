@@ -26,6 +26,7 @@ Vue.component('user-list', require('./components/chat/UserList.vue').default);
 Vue.component('chat', require('./components/chat/Index.vue').default);
 Vue.component('message-item', require('./components/chat/MessageItem').default);
 Vue.component('room-item', require('./components/chat/RoomItem').default);
+Vue.component('zoom-meet', require('./components/zoom/Index').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
