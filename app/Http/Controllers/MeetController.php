@@ -8,7 +8,7 @@ class MeetController extends Controller
 {
     public function index(Request $request)
     {
-        $jwtToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6InphaDlwcWZ1UlpxVWpORWZkbG5FQmciLCJleHAiOjE2MzY1NDYzMDgsImlhdCI6MTYzNTk0MTUwOX0._l16gBXMgb3K-oO6hKHVMmxKsTqEsOfJLoTW3KHGK0k';
+        $jwtToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6InphaDlwcWZ1UlpxVWpORWZkbG5FQmciLCJleHAiOjE2NjgzMjc0MjAsImlhdCI6MTYzNjc4NjM3OX0.xWblI3TeOKOuf8KCbxVVjrUwq-gYGjC9AaWKuJ3l4pY';
 
         $requestBody = [
             'topic'			=> $meetingConfig['topic'] 		?? 'PHP General Talk',
@@ -35,6 +35,7 @@ class MeetController extends Controller
             ]
         ];
         $metUserInfo = $this->getUserInfo($jwtToken);
+
         $zoomUserId = $metUserInfo['id'];
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0); // Skip SSL Verification
@@ -62,8 +63,9 @@ class MeetController extends Controller
 
 
         $meetConfig = json_decode($response, true);
+
         $nickname = $request->nickname;
-        return view('meet', compact('meetConfig', 'nickname'));
+        return view('meet_2', compact('meetConfig', 'nickname'));
     }
 
     public function getUserInfo ($jwtToken) {
