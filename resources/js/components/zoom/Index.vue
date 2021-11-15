@@ -1,26 +1,25 @@
 <template>
-    <div></div>
-<!--    <div class="iframe-container">
+    <div class="iframe-container">
         <meta charset="utf-8">
-        <link type="text/css" rel="stylesheet" href="https://dmogdx0jrul3u.cloudfront.net/1.3.7/css/bootstrap.css">
+        <link type="text/css" rel="stylesheet" href="https://source.zoom.us/2.0.1/css/bootstrap.css">
         <link
             type="text/css"
             rel="stylesheet"
-            href="https://dmogdx0jrul3u.cloudfront.net/1.3.7/css/react-select.css"
+            href="https://source.zoom.us/2.0.1/css/react-select.css"
         >
 
         <meta name="format-detection" content="telephone=no">
-    </div>-->
+    </div>
 </template>
 
 <script>
-    import { ZoomMtg } from "@zoomus/websdk";
+    // import { ZoomMtg } from "@zoomus/websdk";
     // var ZoomMtg = ZoomMtgT.ZoomMtg
     // import { ZoomMtg } from "zoomus-jssdk";
-    // var ZoomMtg = require('@zoomus/websdk').ZoomMtg
+    var ZoomMtg = require('@zoomus/websdk').ZoomMtg
     console.log("checkSystemRequirements");
     console.log(JSON.stringify(ZoomMtg.checkSystemRequirements()));
-    ZoomMtg.setZoomJSLib('https://dmogdx0jrul3u.cloudfront.net/1.3.7/lib', '/av');
+    ZoomMtg.setZoomJSLib('https://source.zoom.us/2.0.1/lib', '/av');
     ZoomMtg.preLoadWasm();
     ZoomMtg.prepareJssdk();
 
@@ -66,9 +65,14 @@
             });
             // join function
             ZoomMtg.init({
-                leaveUrl: "http://www.zoom.us",
+
+                leaveUrl: "https://zoom.us",
                 isSupportAV: true,
+                debug: true,
+                meetingInfo: "THis is test",
+
                 success: () => {
+                    document.getElementById("zmmtg-root").style.display = "block";
                     ZoomMtg.join({
                         meetingNumber: this.meetConfig.meetingNumber,
                         userName: this.meetConfig.userName,
@@ -77,7 +81,9 @@
                         userEmail: "rashiqulrony@gmail.com",
                         passWord: this.meetConfig.passWord,
                         success: function(res) {
-                            // eslint-disable-next-line
+                            parent.postMessage({
+                                type:"event.joinSuccess"
+                            },"*");
                             console.log("join meeting success");
                         },
                         error: function(res) {

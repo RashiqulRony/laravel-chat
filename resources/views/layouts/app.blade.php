@@ -16,6 +16,9 @@
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
+    <script>
+        var bastUrl = "{{ url('/') }}";
+    </script>
     @yield('styles')
 </head>
 <body>

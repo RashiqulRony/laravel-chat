@@ -11,8 +11,8 @@ class MeetController extends Controller
         $jwtToken = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6InphaDlwcWZ1UlpxVWpORWZkbG5FQmciLCJleHAiOjE2NjgzMjc0MjAsImlhdCI6MTYzNjc4NjM3OX0.xWblI3TeOKOuf8KCbxVVjrUwq-gYGjC9AaWKuJ3l4pY';
 
         $requestBody = [
-            'topic'			=> $meetingConfig['topic'] 		?? 'PHP General Talk',
-            'type'			=> $meetingConfig['type'] 		?? 2,
+            'topic'			=> $meetingConfig['topic'] 		?? 'Test',
+            'type'			=> $meetingConfig['type'] 		?? 1,
             'start_time'	=> $meetingConfig['start_time']	?? date('Y-m-dTh:i:00').'Z',
             'duration'		=> $meetingConfig['duration'] 	?? 30,
             'password'		=> $meetingConfig['password'] 	?? mt_rand(),
@@ -64,8 +64,10 @@ class MeetController extends Controller
 
         $meetConfig = json_decode($response, true);
 
+
         $nickname = $request->nickname;
         return view('meet_2', compact('meetConfig', 'nickname'));
+//        return view('meet', compact('meetConfig', 'nickname'));
     }
 
     public function getUserInfo ($jwtToken) {
