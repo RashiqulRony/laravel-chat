@@ -28,3 +28,8 @@ Route::group(['prefix' => 'chat', 'as' => 'chat.', 'middleware' => ['auth']], fu
     Route::delete('/{chat_id}', 'ChatController@chatDelete')->name('chatDelete');
     Route::delete('/{chat_id}/file/{file_id}', 'ChatController@deleteSingleFile')->name('deleteSingleFile');
 });
+
+Route::group(['prefix' => 'video', 'as' => 'video.', 'middleware' => ['auth']], function () {
+    Route::get('/chat', 'VideoChatController@index')->name('index');
+    Route::post('/start', 'VideoChatController@start')->name('start');
+});
