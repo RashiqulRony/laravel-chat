@@ -2113,16 +2113,110 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @babel/runtime/regenerator */ "./node_modules/@babel/runtime/regenerator/index.js");
 /* harmony import */ var _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var pusher_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! pusher-js */ "./node_modules/pusher-js/dist/web/pusher.js");
-/* harmony import */ var pusher_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(pusher_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! simple-peer */ "./node_modules/simple-peer/index.js");
-/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(simple_peer__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! simple-peer */ "./node_modules/simple-peer/index.js");
+/* harmony import */ var simple_peer__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(simple_peer__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _helper__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../helper */ "./resources/js/helper.js");
 
 
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -2138,88 +2232,198 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  props: ['user', 'others', 'pusherKey', 'pusherCluster'],
+  props: ["allusers", "authuserid", "pusherKey", "pusherCluster", "turn_url", "turn_username", "turn_credential"],
   data: function data() {
     return {
-      channel: null,
-      stream: null,
-      peers: {}
+      isFocusMyself: true,
+      callPlaced: false,
+      callPartner: null,
+      mutedAudio: false,
+      mutedVideo: false,
+      isAudio: false,
+      videoCallParams: {
+        users: [],
+        stream: null,
+        receivingCall: false,
+        caller: null,
+        callerSignal: null,
+        callAccepted: false,
+        channel: null,
+        peer1: null,
+        peer2: null
+      }
     };
   },
   mounted: function mounted() {
-    this.setupVideoChat();
+    this.initializeChannel(); // this initializes laravel echo
+
+    this.initializeCallListeners(); // subscribes to video presence channel and listens to video events
   },
-  created: function created() {},
-  methods: {
-    startVideoChat: function startVideoChat(userId) {
-      this.getPeer(userId, true);
-    },
-    getPeer: function getPeer(userId, initiator) {
-      var _this2 = this;
-
-      var _this = this;
-
-      if (this.peers[userId] === undefined) {
-        var peer = new (simple_peer__WEBPACK_IMPORTED_MODULE_2___default())({
-          initiator: initiator,
-          stream: _this.stream,
-          trickle: false
-        });
-        console.log(peer);
-        console.log(_this.channel);
-        peer.on('signal', function (data) {
-          _this.channel.trigger("client-signal-".concat(userId), {
-            userId: _this2.user.id,
-            data: data
-          });
-        }).on('stream', function (stream) {
-          var videoThere = _this2.$refs['video-there'];
-          videoThere.srcObject = stream;
-        }).on('close', function () {
-          var peer = _this2.peers[userId];
-
-          if (peer !== undefined) {
-            peer.destroy();
-          }
-
-          delete _this2.peers[userId];
-        });
-        this.peers[userId] = peer;
+  computed: {
+    incomingCallDialog: function incomingCallDialog() {
+      if (this.videoCallParams.receivingCall && this.videoCallParams.caller !== this.authuserid) {
+        // this.audio('/audio/ring.mp3');
+        return true;
       }
 
-      return _this.peers[userId];
+      return false;
     },
-    setupVideoChat: function setupVideoChat() {
+    callerDetails: function callerDetails() {
+      var _this = this;
+
+      if (this.videoCallParams.caller && this.videoCallParams.caller !== this.authuserid) {
+        var incomingCaller = this.allusers.filter(function (user) {
+          return user.id === _this.videoCallParams.caller;
+        });
+        return {
+          id: this.videoCallParams.caller,
+          name: "".concat(incomingCaller[0].name)
+        };
+      }
+
+      return null;
+    }
+  },
+  methods: {
+    initializeChannel: function initializeChannel() {
+      this.videoCallParams.channel = window.Echo.join("presence-video-channel");
+    },
+    getMediaPermission: function getMediaPermission() {
+      var _this2 = this;
+
+      return (0,_helper__WEBPACK_IMPORTED_MODULE_2__.getPermissions)().then(function (stream) {
+        _this2.videoCallParams.stream = stream;
+
+        if (_this2.$refs.userVideo) {
+          _this2.$refs.userVideo.srcObject = stream;
+        }
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    initializeCallListeners: function initializeCallListeners() {
       var _this3 = this;
 
+      this.videoCallParams.channel.here(function (users) {
+        _this3.videoCallParams.users = users;
+      });
+      this.videoCallParams.channel.joining(function (user) {
+        // check user availability
+        var joiningUserIndex = _this3.videoCallParams.users.findIndex(function (data) {
+          return data.id === user.id;
+        });
+
+        if (joiningUserIndex < 0) {
+          _this3.videoCallParams.users.push(user);
+        }
+      });
+      this.videoCallParams.channel.leaving(function (user) {
+        var leavingUserIndex = _this3.videoCallParams.users.findIndex(function (data) {
+          return data.id === user.id;
+        });
+
+        _this3.videoCallParams.users.splice(leavingUserIndex, 1);
+      }); // listen to incomming call
+
+      this.videoCallParams.channel.listen("StartVideoChat", function (_ref) {
+        var data = _ref.data;
+        console.log(data);
+
+        if (data.type === "incomingCall") {
+          // add a new line to the sdp to take care of error
+          var updatedSignal = _objectSpread(_objectSpread({}, data.signalData), {}, {
+            sdp: "".concat(data.signalData.sdp, "\n")
+          });
+
+          _this3.videoCallParams.receivingCall = true;
+          _this3.videoCallParams.caller = data.from;
+          _this3.videoCallParams.callerSignal = updatedSignal;
+        }
+      });
+    },
+    placeVideoCall: function placeVideoCall(id, name) {
+      var _this4 = this;
+
       return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee() {
-        var stream, videoHere, pusher;
         return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
-                return navigator.mediaDevices.getUserMedia({
-                  video: true,
-                  audio: true
+                _this4.callPlaced = true;
+                _this4.callPartner = name;
+                _context.next = 4;
+                return _this4.getMediaPermission();
+
+              case 4:
+                _this4.videoCallParams.peer1 = new (simple_peer__WEBPACK_IMPORTED_MODULE_1___default())({
+                  initiator: true,
+                  trickle: false,
+                  stream: _this4.videoCallParams.stream,
+                  config: {
+                    iceServers: [{
+                      urls: _this4.turn_url,
+                      username: _this4.turn_username,
+                      credential: _this4.turn_credential
+                    }]
+                  }
                 });
 
-              case 2:
-                stream = _context.sent;
-                console.log(stream);
-                videoHere = _this3.$refs['video-here'];
-                videoHere.srcObject = stream;
-                _this3.stream = stream;
-                pusher = _this3.getPusherInstance();
-                _this3.channel = pusher.subscribe('presence-video-chat');
+                _this4.videoCallParams.peer1.on("signal", function (data) {
+                  console.log(data); // send user call signal
 
-                _this3.channel.bind("client-signal-".concat(_this3.user.id), function (signal) {
-                  var peer = _this3.getPeer(signal.userId, false);
-
-                  peer.signal(signal.data);
+                  axios.post("/video/call-user", {
+                    user_to_call: id,
+                    signal_data: data,
+                    from: _this4.authuserid
+                  }).then(function (res) {
+                    if (res.status === 200) {}
+                  })["catch"](function (error) {
+                    console.log(error);
+                  });
                 });
 
-              case 10:
+                _this4.videoCallParams.peer1.on("stream", function (stream) {
+                  console.log("call streaming");
+
+                  if (_this4.$refs.partnerVideo) {
+                    _this4.$refs.partnerVideo.srcObject = stream;
+                  }
+                });
+
+                _this4.videoCallParams.peer1.on("connect", function () {
+                  console.log("peer connected");
+                });
+
+                _this4.videoCallParams.peer1.on("error", function (err) {
+                  console.log(err);
+                });
+
+                _this4.videoCallParams.peer1.on("close", function () {
+                  console.log("call closed caller");
+                });
+
+                _this4.videoCallParams.channel.listen("StartVideoChat", function (_ref2) {
+                  var data = _ref2.data;
+                  console.log(data);
+
+                  if (data.type === "callAccepted") {
+                    if (data.signal.renegotiate) {
+                      console.log("renegotating");
+                    }
+
+                    if (data.signal.sdp) {
+                      _this4.videoCallParams.callAccepted = true;
+
+                      var updatedSignal = _objectSpread(_objectSpread({}, data.signal), {}, {
+                        sdp: "".concat(data.signal.sdp, "\n")
+                      });
+
+                      _this4.videoCallParams.peer1.signal(updatedSignal);
+                    }
+                  }
+                });
+
+              case 11:
               case "end":
                 return _context.stop();
             }
@@ -2227,16 +2431,151 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
         }, _callee);
       }))();
     },
-    getPusherInstance: function getPusherInstance() {
-      return new (pusher_js__WEBPACK_IMPORTED_MODULE_1___default())(this.pusherKey, {
-        authEndpoint: '/video/start',
-        cluster: this.pusherCluster,
-        auth: {
-          headers: {
-            'X-CSRF-Token': document.head.querySelector('meta[name="csrf-token"]').content
+    acceptCall: function acceptCall() {
+      var _this5 = this;
+
+      return _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee2() {
+        return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee2$(_context2) {
+          while (1) {
+            switch (_context2.prev = _context2.next) {
+              case 0:
+                _this5.callPlaced = true;
+                _this5.videoCallParams.callAccepted = true;
+                _context2.next = 4;
+                return _this5.getMediaPermission();
+
+              case 4:
+                _this5.videoCallParams.peer2 = new (simple_peer__WEBPACK_IMPORTED_MODULE_1___default())({
+                  initiator: false,
+                  trickle: false,
+                  stream: _this5.videoCallParams.stream,
+                  config: {
+                    iceServers: [{
+                      urls: _this5.turn_url,
+                      username: _this5.turn_username,
+                      credential: _this5.turn_credential
+                    }]
+                  }
+                });
+                _this5.videoCallParams.receivingCall = false;
+
+                _this5.videoCallParams.peer2.on("signal", function (data) {
+                  axios.post("/video/accept-call", {
+                    signal: data,
+                    to: _this5.videoCallParams.caller
+                  }).then(function (res) {
+                    if (res.status === 200) {}
+                  })["catch"](function (error) {
+                    console.log(error);
+                  });
+                });
+
+                _this5.videoCallParams.peer2.on("stream", function (stream) {
+                  _this5.videoCallParams.callAccepted = true;
+                  _this5.$refs.partnerVideo.srcObject = stream;
+                });
+
+                _this5.videoCallParams.peer2.on("connect", function () {
+                  console.log("peer connected");
+                  _this5.videoCallParams.callAccepted = true;
+                });
+
+                _this5.videoCallParams.peer2.on("error", function (err) {
+                  console.log(err);
+                });
+
+                _this5.videoCallParams.peer2.on("close", function () {
+                  console.log("call closed accepter");
+                });
+
+                console.log(_this5.videoCallParams.callerSignal);
+
+                _this5.videoCallParams.peer2.signal(_this5.videoCallParams.callerSignal);
+
+              case 13:
+              case "end":
+                return _context2.stop();
+            }
           }
-        }
+        }, _callee2);
+      }))();
+    },
+    toggleCameraArea: function toggleCameraArea() {
+      if (this.videoCallParams.callAccepted) {
+        this.isFocusMyself = !this.isFocusMyself;
+      }
+    },
+    getUserOnlineStatus: function getUserOnlineStatus(id) {
+      var onlineUserIndex = this.videoCallParams.users.findIndex(function (data) {
+        return data.id === id;
       });
+
+      if (onlineUserIndex < 0) {
+        return "Offline";
+      }
+
+      return "Online";
+    },
+    declineCall: function declineCall() {
+      this.videoCallParams.receivingCall = false;
+    },
+    toggleMuteAudio: function toggleMuteAudio() {
+      if (this.mutedAudio) {
+        this.$refs.userVideo.srcObject.getAudioTracks()[0].enabled = true;
+        this.mutedAudio = false;
+      } else {
+        this.$refs.userVideo.srcObject.getAudioTracks()[0].enabled = false;
+        this.mutedAudio = true;
+      }
+    },
+    toggleMuteVideo: function toggleMuteVideo() {
+      if (this.mutedVideo) {
+        this.$refs.userVideo.srcObject.getVideoTracks()[0].enabled = true;
+        this.mutedVideo = false;
+      } else {
+        this.$refs.userVideo.srcObject.getVideoTracks()[0].enabled = false;
+        this.mutedVideo = true;
+      }
+    },
+    stopStreamedVideo: function stopStreamedVideo(videoElem) {
+      var stream = videoElem.srcObject;
+      var tracks = stream.getTracks();
+      tracks.forEach(function (track) {
+        track.stop();
+      });
+      videoElem.srcObject = null;
+    },
+    endCall: function endCall() {
+      var _this6 = this;
+
+      // if video or audio is muted, enable it so that the stopStreamedVideo method will work
+      if (!this.mutedVideo) this.toggleMuteVideo();
+      if (!this.mutedAudio) this.toggleMuteAudio();
+      this.stopStreamedVideo(this.$refs.userVideo);
+
+      if (this.authuserid === this.videoCallParams.caller) {
+        this.videoCallParams.peer1.destroy();
+      } else {
+        this.videoCallParams.peer2.destroy();
+      }
+
+      this.videoCallParams.channel.pusher.channels.channels["presence-presence-video-channel"].disconnect();
+      setTimeout(function () {
+        _this6.callPlaced = false;
+      }, 3000);
+    },
+    audio: function audio(sound) {
+      if (sound) {
+        var audio = new Audio(sound);
+        audio.play();
+      }
+    },
+    audioStop: function audioStop(sound) {
+      if (sound) {
+        var audio = new Audio(sound);
+        audio.pause();
+        audio.currentTime = 0;
+      }
     }
   }
 });
@@ -2952,6 +3291,58 @@ window.Echo = new laravel_echo__WEBPACK_IMPORTED_MODULE_0__["default"]({
   cluster: "ap2",
   forceTLS: true
 });
+
+/***/ }),
+
+/***/ "./resources/js/helper.js":
+/*!********************************!*\
+  !*** ./resources/js/helper.js ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "getPermissions": () => (/* binding */ getPermissions)
+/* harmony export */ });
+var getPermissions = function getPermissions() {
+  // Older browsers might not implement mediaDevices at all, so we set an empty object first
+  if (navigator.mediaDevices === undefined) {
+    navigator.mediaDevices = {};
+  } // Some browsers partially implement mediaDevices. We can't just assign an object
+  // with getUserMedia as it would overwrite existing properties.
+  // Here, we will just add the getUserMedia property if it's missing.
+
+
+  if (navigator.mediaDevices.getUserMedia === undefined) {
+    navigator.mediaDevices.getUserMedia = function (constraints) {
+      // First get ahold of the legacy getUserMedia, if present
+      var getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia; // Some browsers just don't implement it - return a rejected promise with an error
+      // to keep a consistent interface
+
+      if (!getUserMedia) {
+        return Promise.reject(new Error("getUserMedia is not implemented in this browser"));
+      } // Otherwise, wrap the call to the old navigator.getUserMedia with a Promise
+
+
+      return new Promise(function (resolve, reject) {
+        getUserMedia.call(navigator, constraints, resolve, reject);
+      });
+    };
+  }
+
+  navigator.mediaDevices.getUserMedia = navigator.mediaDevices.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+  return new Promise(function (resolve, reject) {
+    navigator.mediaDevices.getUserMedia({
+      video: false,
+      audio: true
+    }).then(function (stream) {
+      resolve(stream);
+    })["catch"](function (err) {
+      reject(err); //   throw new Error(`Unable to fetch stream ${err}`);
+    });
+  });
+};
 
 /***/ }),
 
@@ -9282,10 +9673,10 @@ function isnan (val) {
 
 /***/ }),
 
-/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css&":
-/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css& ***!
-  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css&":
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css& ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -9299,7 +9690,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.video-container {\n    width: 500px;\n    height: 380px;\n    margin: 8px auto;\n    border: 3px solid #000;\n    position: relative;\n    box-shadow: 1px 1px 1px #9e9e9e;\n}\n.video-here {\n    width: 130px;\n    position: absolute;\n    left: 10px;\n    bottom: 16px;\n    border: 1px solid #000;\n    border-radius: 2px;\n    z-index: 2;\n}\n.video-there {\n    width: 100%;\n    height: 100%;\n    z-index: 1;\n}\n.text-right {\n    text-align: right;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n#video-row[data-v-737f9f18] {\n    width: 700px;\n    max-width: 90vw;\n}\n#incoming-call-card[data-v-737f9f18] {\n    border: 1px solid #0acf83;\n}\n.video-container[data-v-737f9f18] {\n    width: 700px;\n    height: 500px;\n    max-width: 90vw;\n    max-height: 50vh;\n    margin: 0 auto;\n    border: 1px solid #0acf83;\n    position: relative;\n    box-shadow: 1px 1px 11px #9e9e9e;\n    background-color: #fff;\n}\n.video-container .user-video[data-v-737f9f18] {\n    width: 30%;\n    position: absolute;\n    left: 10px;\n    bottom: 10px;\n    border: 1px solid #fff;\n    border-radius: 6px;\n    z-index: 2;\n}\n.video-container .partner-video[data-v-737f9f18] {\n    width: 100%;\n    height: 100%;\n    position: absolute;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    top: 0;\n    z-index: 1;\n    margin: 0;\n    padding: 0;\n}\n.video-container .action-btns[data-v-737f9f18] {\n    position: absolute;\n    bottom: 20px;\n    left: 50%;\n    margin-left: -50px;\n    z-index: 3;\n    display: flex;\n    flex-direction: row;\n}\n\n/* Mobiel Styles */\n@media only screen and (max-width: 768px) {\n.video-container[data-v-737f9f18] {\n        height: 50vh;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -55745,10 +56136,10 @@ SafeBuffer.allocUnsafeSlow = function (size) {
 
 /***/ }),
 
-/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css&":
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css& ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css&":
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css& ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -55758,7 +56149,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
 /* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./VideoChat.vue?vue&type=style&index=0&lang=css& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_id_737f9f18_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css& */ "./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css&");
 
             
 
@@ -55767,11 +56158,11 @@ var options = {};
 options.insert = "head";
 options.singleton = false;
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_id_737f9f18_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__["default"], options);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_id_737f9f18_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
 
 /***/ }),
 
@@ -56241,9 +56632,9 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _VideoChat_vue_vue_type_template_id_737f9f18___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VideoChat.vue?vue&type=template&id=737f9f18& */ "./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&");
+/* harmony import */ var _VideoChat_vue_vue_type_template_id_737f9f18_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./VideoChat.vue?vue&type=template&id=737f9f18&scoped=true& */ "./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&scoped=true&");
 /* harmony import */ var _VideoChat_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./VideoChat.vue?vue&type=script&lang=js& */ "./resources/js/components/VideoChat.vue?vue&type=script&lang=js&");
-/* harmony import */ var _VideoChat_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VideoChat.vue?vue&type=style&index=0&lang=css& */ "./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _VideoChat_vue_vue_type_style_index_0_id_737f9f18_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css& */ "./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css&");
 /* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
@@ -56255,11 +56646,11 @@ __webpack_require__.r(__webpack_exports__);
 
 var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
   _VideoChat_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
-  _VideoChat_vue_vue_type_template_id_737f9f18___WEBPACK_IMPORTED_MODULE_0__.render,
-  _VideoChat_vue_vue_type_template_id_737f9f18___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  _VideoChat_vue_vue_type_template_id_737f9f18_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render,
+  _VideoChat_vue_vue_type_template_id_737f9f18_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
   null,
-  null,
+  "737f9f18",
   null
   
 )
@@ -56692,15 +57083,15 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css&":
-/*!********************************************************************************!*\
-  !*** ./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css& ***!
-  \********************************************************************************/
+/***/ "./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css&":
+/*!********************************************************************************************************!*\
+  !*** ./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css& ***!
+  \********************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./VideoChat.vue?vue&type=style&index=0&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&lang=css&");
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_1_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_clonedRuleSet_9_0_rules_0_use_2_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_style_index_0_id_737f9f18_scoped_true_lang_css___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/style-loader/dist/cjs.js!../../../node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!../../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../../node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[1]!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js??clonedRuleSet-9[0].rules[0].use[2]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=style&index=0&id=737f9f18&scoped=true&lang=css&");
 
 
 /***/ }),
@@ -56748,19 +57139,19 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&":
-/*!******************************************************************************!*\
-  !*** ./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18& ***!
-  \******************************************************************************/
+/***/ "./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&scoped=true&":
+/*!******************************************************************************************!*\
+  !*** ./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&scoped=true& ***!
+  \******************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_template_id_737f9f18___WEBPACK_IMPORTED_MODULE_0__.render),
-/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_template_id_737f9f18___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_template_id_737f9f18_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_template_id_737f9f18_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
-/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_template_id_737f9f18___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./VideoChat.vue?vue&type=template&id=737f9f18& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&");
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_VideoChat_vue_vue_type_template_id_737f9f18_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./VideoChat.vue?vue&type=template&id=737f9f18&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&scoped=true&");
 
 
 /***/ }),
@@ -56932,10 +57323,10 @@ render._withStripped = true
 
 /***/ }),
 
-/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&":
-/*!*********************************************************************************************************************************************************************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18& ***!
-  \*********************************************************************************************************************************************************************************************************************/
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&scoped=true&":
+/*!*********************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/VideoChat.vue?vue&type=template&id=737f9f18&scoped=true& ***!
+  \*********************************************************************************************************************************************************************************************************************************/
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -56948,40 +57339,187 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "container" }, [
-    _c("h1", { staticClass: "text-center" }, [_vm._v("Laravel Video Chat")]),
-    _vm._v(" "),
-    _c(
-      "div",
-      { ref: "video-container", staticClass: "video-container" },
-      [
-        _c("video", {
-          ref: "video-here",
-          staticClass: "video-here",
-          attrs: { autoplay: "" },
-        }),
-        _vm._v(" "),
-        _c("video", {
-          ref: "video-there",
-          staticClass: "video-there",
-          attrs: { autoplay: "" },
-        }),
-        _vm._v(" "),
-        _vm._l(_vm.others, function (name, userId) {
-          return _c("div", { key: userId, staticClass: "text-right" }, [
-            _c("button", {
-              domProps: { textContent: _vm._s("Talk with " + name) },
-              on: {
-                click: function ($event) {
-                  return _vm.startVideoChat(userId)
+  return _c("div", [
+    _c("div", { staticClass: "container" }, [
+      _c("div", { staticClass: "row" }, [
+        _c("div", { staticClass: "col" }, [
+          _c(
+            "div",
+            { staticClass: "btn-group", attrs: { role: "group" } },
+            _vm._l(_vm.allusers, function (user) {
+              return _c(
+                "button",
+                {
+                  key: user.id,
+                  staticClass: "btn btn-primary mr-2",
+                  attrs: { type: "button" },
+                  on: {
+                    click: function ($event) {
+                      return _vm.placeVideoCall(user.id, user.name)
+                    },
+                  },
                 },
-              },
+                [
+                  _vm._v(
+                    "\n                        Call " +
+                      _vm._s(user.name) +
+                      "\n                        "
+                  ),
+                  _c("span", { staticClass: "badge badge-light" }, [
+                    _vm._v(_vm._s(_vm.getUserOnlineStatus(user.id))),
+                  ]),
+                ]
+              )
             }),
+            0
+          ),
+        ]),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "row mt-5", attrs: { id: "video-row" } }, [
+        _vm.callPlaced
+          ? _c("div", { staticClass: "col-12 video-container" }, [
+              _c("video", {
+                ref: "userVideo",
+                staticClass: "cursor-pointer",
+                class:
+                  _vm.isFocusMyself === true ? "user-video" : "partner-video",
+                attrs: { muted: "", playsinline: "", autoplay: "" },
+                domProps: { muted: true },
+                on: { click: _vm.toggleCameraArea },
+              }),
+              _vm._v(" "),
+              _vm.videoCallParams.callAccepted
+                ? _c("video", {
+                    ref: "partnerVideo",
+                    staticClass: "cursor-pointer",
+                    class:
+                      _vm.isFocusMyself === true
+                        ? "partner-video"
+                        : "user-video",
+                    attrs: { playsinline: "", autoplay: "" },
+                    on: { click: _vm.toggleCameraArea },
+                  })
+                : _c("div", { staticClass: "partner-video" }, [
+                    _vm.callPartner
+                      ? _c(
+                          "div",
+                          { staticClass: "column items-center q-pt-xl" },
+                          [
+                            _c(
+                              "div",
+                              { staticClass: "col q-gutter-y-md text-center" },
+                              [
+                                _c("p", { staticClass: "q-pt-md" }, [
+                                  _c("strong", [
+                                    _vm._v(_vm._s(_vm.callPartner)),
+                                  ]),
+                                ]),
+                                _vm._v(" "),
+                                _c("p", [_vm._v("calling...")]),
+                              ]
+                            ),
+                          ]
+                        )
+                      : _vm._e(),
+                  ]),
+              _vm._v(" "),
+              _c("div", { staticClass: "action-btns" }, [
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-info",
+                    attrs: { type: "button" },
+                    on: { click: _vm.toggleMuteAudio },
+                  },
+                  [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(_vm.mutedAudio ? "Unmute" : "Mute") +
+                        "\n                    "
+                    ),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-primary mx-4",
+                    attrs: { type: "button" },
+                    on: { click: _vm.toggleMuteVideo },
+                  },
+                  [
+                    _vm._v(
+                      "\n                        " +
+                        _vm._s(_vm.mutedVideo ? "ShowVideo" : "HideVideo") +
+                        "\n                    "
+                    ),
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "button",
+                  {
+                    staticClass: "btn btn-danger",
+                    attrs: { type: "button" },
+                    on: { click: _vm.endCall },
+                  },
+                  [
+                    _vm._v(
+                      "\n                        EndCall\n                    "
+                    ),
+                  ]
+                ),
+              ]),
+            ])
+          : _vm._e(),
+      ]),
+      _vm._v(" "),
+      _vm.incomingCallDialog
+        ? _c("div", { staticClass: "row" }, [
+            _c("div", { staticClass: "col" }, [
+              _c("p", [
+                _vm._v("\n                    Incoming Call From "),
+                _c("strong", [_vm._v(_vm._s(_vm.callerDetails.name))]),
+              ]),
+              _vm._v(" "),
+              _c(
+                "div",
+                { staticClass: "btn-group", attrs: { role: "group" } },
+                [
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger",
+                      attrs: { type: "button", "data-dismiss": "modal" },
+                      on: { click: _vm.declineCall },
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Decline\n                    "
+                      ),
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-success ml-5",
+                      attrs: { type: "button" },
+                      on: { click: _vm.acceptCall },
+                    },
+                    [
+                      _vm._v(
+                        "\n                        Accept\n                    "
+                      ),
+                    ]
+                  ),
+                ]
+              ),
+            ]),
           ])
-        }),
-      ],
-      2
-    ),
+        : _vm._e(),
+    ]),
   ])
 }
 var staticRenderFns = []

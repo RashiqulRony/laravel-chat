@@ -30,6 +30,16 @@ Route::group(['prefix' => 'chat', 'as' => 'chat.', 'middleware' => ['auth']], fu
 });
 
 Route::group(['prefix' => 'video', 'as' => 'video.', 'middleware' => ['auth']], function () {
-    Route::get('/chat', 'VideoChatController@index')->name('index');
+//    Route::get('/chat', 'VideoChatController@index')->name('index');
     Route::post('/start', 'VideoChatController@start')->name('start');
+
+
+    Route::get('/chat', function () {
+        // fetch all users apart from the authenticated user
+        $users = \App\Models\User::where('id', '<>', \Illuminate\Support\Facades\Auth::id())->get();
+        return view('video', ['users' => $users]);
+    });
+
+    Route::post('/call-user', 'VideoChatController@callUser');
+    Route::post('/accept-call', 'VideoChatController@acceptCall');
 });

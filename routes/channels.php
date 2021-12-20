@@ -20,3 +20,7 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('chat.{user}', function ($user, $chat_room_id) {
     return ['id' => $user->id, 'name' => $user->name];
 });
+
+Broadcast::channel('presence-video-channel', function ($user) {
+    return ['id' => $user->id, 'name' => $user->name];
+});
