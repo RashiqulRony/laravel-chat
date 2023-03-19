@@ -18,5 +18,5 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('chat.{chat_room_id}', function ($user, $chat_room_id) {
-    return ['id' => $user->id, 'name' => $user->name];
+    return true;
 });
